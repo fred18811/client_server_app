@@ -1,0 +1,12 @@
+key1:
+- val1
+- val2
+- 1
+key2: 2
+key3:
+- key1: Слово
+  key2: Дело
+  key3: Пример
+- key1: tree
+  key2: door
+  key3: world
