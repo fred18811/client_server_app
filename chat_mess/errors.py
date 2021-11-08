@@ -17,3 +17,19 @@ class ReqFieldMissingError(Exception):
 
     def __str__(self):
         return f'В принятом словаре отсутствует обязательное поле {self.missing_field}.'
+
+
+class IncorrectClientMode(Exception):
+
+    def __str__(self):
+        return 'Неверно указан режим клиента'
+
+
+class ServerError(Exception):
+    """Исключение - ошибка сервера"""
+
+    def __init__(self, text):
+        self.text = text
+
+    def __str__(self):
+        return self.text

@@ -1,9 +1,14 @@
 """Utils"""
 
 import json
-from common.variables import MAX_PACKAGE_LENGTH, ENCODING
+import sys
+
+from common.variables import MAX_PACKAGE_LENGTH, ENCODING, DEFAULT_ETHERNET_PORT, DEFAULT_IP, DEFAULT_MODE_CLIENT
+from decor import Log
+from errors import IncorrectClientMode
 
 
+@Log()
 def get_data(client):
     """
     Утилита приёма и декодирования сообщения
@@ -22,6 +27,7 @@ def get_data(client):
     raise ValueError
 
 
+@Log()
 def send_data(sock, message):
     """
     Утилита кодирования и отправки сообщения
@@ -34,3 +40,58 @@ def send_data(sock, message):
     js_data = json.dumps(message)
     encoded_data = js_data.encode(ENCODING)
     sock.send(encoded_data)
+
+
+@Log()
+def get_port_server(logger):
+    try:
+        logger.debug('Проверка введенного порта')
+        if '-p' in sys.argv:
+            server_port = int(sys.argv[sys.argv.index('-p') + 1])
+        else:
+            server_port = DEFAULT_ETHERNET_PORT
+        if server_port < 1024 or server_port > 65535:
+            raise ValueError
+        logger.info(f'Порт сервера {server_port}')
+        return server_port
+    except IndexError:
+        logger.critical('После параметра -\'p\' необходимо указать номер порта.')
+        sys.exit(1)
+    except ValueError:
+        logger.critical('В качастве порта может быть указано только число в диапазоне от 1024 до 65535.')
+        sys.exit(1)
+
+
+@Log()
+def get_ip_server(logger):
+    try:
+        logger.debug('Проверка введенного ip адреса')
+        if '-a' in sys.argv:
+            server_ip_address = sys.argv[sys.argv.index('-a') + 1]
+        else:
+            server_ip_address = DEFAULT_IP
+        logger.info(f'IP адрес {server_ip_address}')
+        return server_ip_address
+    except IndexError:
+        logger.critical('После параметра \'a\'- необходимо указать адрес, который будет слушать сервер.')
+        sys.exit(1)
+
+
+@Log()
+def get_client_mode(logger):
+    try:
+        logger.debug('Проверка введенного режима клиента')
+        if '-m' in sys.argv:
+            client_mode = sys.argv[sys.argv.index('-m') + 1]
+        else:
+            client_mode = DEFAULT_MODE_CLIENT
+        logger.info(f'Режим клиента {client_mode}')
+        if client_mode not in ('listen', 'send'):
+            raise IncorrectClientMode
+        return client_mode
+    except IndexError:
+        logger.critical('После параметра \'m\'- необходимо указать режим.')
+        sys.exit(1)
+    except IncorrectClientMode:
+        logger.critical(f'Указан недопустимый режим работы {client_mode}, допустимые режимы: listen , send')
+        sys.exit(1)
