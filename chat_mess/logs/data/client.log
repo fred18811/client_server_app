@@ -1,0 +1,93 @@
+2021-11-08 14:20:58,247 DEBUG      decor.py                  Вызвана функция main с параметрами (), {}.Функция вызвана в функции\молуле <module>.
+2021-11-08 14:20:58,248 DEBUG      decor.py                  Вызвана функция get_ip_server с параметрами (<Logger client (DEBUG)>,), {}.Функция вызвана в функции\молуле main.
+2021-11-08 14:20:58,248 DEBUG      utils.py                  Проверка введенного ip адреса
+2021-11-08 14:20:58,248 INFO       utils.py                  IP адрес 127.0.0.1
+2021-11-08 14:20:58,248 DEBUG      decor.py                  Вызвана функция get_port_server с параметрами (<Logger client (DEBUG)>,), {}.Функция вызвана в функции\молуле main.
+2021-11-08 14:20:58,248 DEBUG      utils.py                  Проверка введенного порта
+2021-11-08 14:20:58,248 INFO       utils.py                  Порт сервера 7777
+2021-11-08 14:20:58,249 DEBUG      decor.py                  Вызвана функция get_client_mode с параметрами (<Logger client (DEBUG)>,), {}.Функция вызвана в функции\молуле main.
+2021-11-08 14:20:58,249 DEBUG      utils.py                  Проверка введенного режима клиента
+2021-11-08 14:20:58,249 INFO       utils.py                  Режим клиента send
+2021-11-08 14:20:58,249 INFO       client.py                 Запущен клиент с парамертами: адрес сервера: 127.0.0.1 , порт: 7777/, режим send
+2021-11-08 14:20:58,249 DEBUG      decor.py                  Вызвана функция create_client_info с параметрами (), {}.Функция вызвана в функции\молуле main.
+2021-11-08 14:20:58,249 DEBUG      client.py                 Сформировано сообщение presence для пользователя Guest
+2021-11-08 14:20:58,250 DEBUG      decor.py                  Вызвана функция send_data с параметрами (<socket.socket fd=5, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 38170), raddr=('127.0.0.1', 7777)>, {'action': 'presence', 'time': 1636370458.2498875, 'user': {'account_name': 'Guest'}}), {}.Функция вызвана в функции\молуле main.
+2021-11-08 14:20:58,250 DEBUG      decor.py                  Вызвана функция get_data с параметрами (<socket.socket fd=5, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 38170), raddr=('127.0.0.1', 7777)>,), {}.Функция вызвана в функции\молуле main.
+2021-11-08 14:20:58,369 DEBUG      decor.py                  Вызвана функция main с параметрами (), {}.Функция вызвана в функции\молуле <module>.
+2021-11-08 14:20:58,370 DEBUG      decor.py                  Вызвана функция get_ip_server с параметрами (<Logger client (DEBUG)>,), {}.Функция вызвана в функции\молуле main.
+2021-11-08 14:20:58,370 DEBUG      utils.py                  Проверка введенного ip адреса
+2021-11-08 14:20:58,370 INFO       utils.py                  IP адрес 127.0.0.1
+2021-11-08 14:20:58,370 DEBUG      decor.py                  Вызвана функция get_port_server с параметрами (<Logger client (DEBUG)>,), {}.Функция вызвана в функции\молуле main.
+2021-11-08 14:20:58,370 DEBUG      utils.py                  Проверка введенного порта
+2021-11-08 14:20:58,370 INFO       utils.py                  Порт сервера 7777
+2021-11-08 14:20:58,370 DEBUG      decor.py                  Вызвана функция get_client_mode с параметрами (<Logger client (DEBUG)>,), {}.Функция вызвана в функции\молуле main.
+2021-11-08 14:20:58,370 DEBUG      utils.py                  Проверка введенного режима клиента
+2021-11-08 14:20:58,371 INFO       utils.py                  Режим клиента send
+2021-11-08 14:20:58,371 INFO       client.py                 Запущен клиент с парамертами: адрес сервера: 127.0.0.1 , порт: 7777/, режим send
+2021-11-08 14:20:58,371 DEBUG      decor.py                  Вызвана функция create_client_info с параметрами (), {}.Функция вызвана в функции\молуле main.
+2021-11-08 14:20:58,371 DEBUG      client.py                 Сформировано сообщение presence для пользователя Guest
+2021-11-08 14:20:58,371 DEBUG      decor.py                  Вызвана функция send_data с параметрами (<socket.socket fd=5, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 38172), raddr=('127.0.0.1', 7777)>, {'action': 'presence', 'time': 1636370458.371625, 'user': {'account_name': 'Guest'}}), {}.Функция вызвана в функции\молуле main.
+2021-11-08 14:20:58,372 DEBUG      decor.py                  Вызвана функция get_data с параметрами (<socket.socket fd=5, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 38172), raddr=('127.0.0.1', 7777)>,), {}.Функция вызвана в функции\молуле main.
+2021-11-08 14:20:58,379 DEBUG      decor.py                  Вызвана функция check_ans с параметрами ({'response': 200},), {}.Функция вызвана в функции\молуле main.
+2021-11-08 14:20:58,379 DEBUG      client.py                 Разбор сообщения от сервера {'response': 200}
+2021-11-08 14:20:58,379 DEBUG      client.py                 Статус сообщения "200 : OK"
+2021-11-08 14:20:58,379 DEBUG      client.py                 Ответ сервера 200 : OK
+2021-11-08 14:20:58,379 DEBUG      decor.py                  Вызвана функция create_message с параметрами (<socket.socket fd=5, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 38170), raddr=('127.0.0.1', 7777)>,), {}.Функция вызвана в функции\молуле main.
+2021-11-08 14:20:58,616 DEBUG      decor.py                  Вызвана функция main с параметрами (), {}.Функция вызвана в функции\молуле <module>.
+2021-11-08 14:20:58,616 DEBUG      decor.py                  Вызвана функция get_ip_server с параметрами (<Logger client (DEBUG)>,), {}.Функция вызвана в функции\молуле main.
+2021-11-08 14:20:58,616 DEBUG      utils.py                  Проверка введенного ip адреса
+2021-11-08 14:20:58,617 INFO       utils.py                  IP адрес 127.0.0.1
+2021-11-08 14:20:58,617 DEBUG      decor.py                  Вызвана функция get_port_server с параметрами (<Logger client (DEBUG)>,), {}.Функция вызвана в функции\молуле main.
+2021-11-08 14:20:58,617 DEBUG      utils.py                  Проверка введенного порта
+2021-11-08 14:20:58,617 INFO       utils.py                  Порт сервера 7777
+2021-11-08 14:20:58,618 DEBUG      decor.py                  Вызвана функция get_client_mode с параметрами (<Logger client (DEBUG)>,), {}.Функция вызвана в функции\молуле main.
+2021-11-08 14:20:58,618 DEBUG      utils.py                  Проверка введенного режима клиента
+2021-11-08 14:20:58,618 INFO       utils.py                  Режим клиента listen
+2021-11-08 14:20:58,618 INFO       client.py                 Запущен клиент с парамертами: адрес сервера: 127.0.0.1 , порт: 7777/, режим listen
+2021-11-08 14:20:58,618 DEBUG      decor.py                  Вызвана функция create_client_info с параметрами (), {}.Функция вызвана в функции\молуле main.
+2021-11-08 14:20:58,619 DEBUG      client.py                 Сформировано сообщение presence для пользователя Guest
+2021-11-08 14:20:58,619 DEBUG      decor.py                  Вызвана функция send_data с параметрами (<socket.socket fd=5, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 38174), raddr=('127.0.0.1', 7777)>, {'action': 'presence', 'time': 1636370458.6190522, 'user': {'account_name': 'Guest'}}), {}.Функция вызвана в функции\молуле main.
+2021-11-08 14:20:58,620 DEBUG      decor.py                  Вызвана функция get_data с параметрами (<socket.socket fd=5, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 38174), raddr=('127.0.0.1', 7777)>,), {}.Функция вызвана в функции\молуле main.
+2021-11-08 14:20:58,621 DEBUG      decor.py                  Вызвана функция check_ans с параметрами ({'response': 200},), {}.Функция вызвана в функции\молуле main.
+2021-11-08 14:20:58,621 DEBUG      client.py                 Разбор сообщения от сервера {'response': 200}
+2021-11-08 14:20:58,621 DEBUG      client.py                 Статус сообщения "200 : OK"
+2021-11-08 14:20:58,621 DEBUG      client.py                 Ответ сервера 200 : OK
+2021-11-08 14:20:58,622 DEBUG      decor.py                  Вызвана функция create_message с параметрами (<socket.socket fd=5, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 38172), raddr=('127.0.0.1', 7777)>,), {}.Функция вызвана в функции\молуле main.
+2021-11-08 14:20:58,661 DEBUG      decor.py                  Вызвана функция main с параметрами (), {}.Функция вызвана в функции\молуле <module>.
+2021-11-08 14:20:58,661 DEBUG      decor.py                  Вызвана функция get_ip_server с параметрами (<Logger client (DEBUG)>,), {}.Функция вызвана в функции\молуле main.
+2021-11-08 14:20:58,661 DEBUG      utils.py                  Проверка введенного ip адреса
+2021-11-08 14:20:58,661 INFO       utils.py                  IP адрес 127.0.0.1
+2021-11-08 14:20:58,662 DEBUG      decor.py                  Вызвана функция get_port_server с параметрами (<Logger client (DEBUG)>,), {}.Функция вызвана в функции\молуле main.
+2021-11-08 14:20:58,662 DEBUG      utils.py                  Проверка введенного порта
+2021-11-08 14:20:58,662 INFO       utils.py                  Порт сервера 7777
+2021-11-08 14:20:58,662 DEBUG      decor.py                  Вызвана функция get_client_mode с параметрами (<Logger client (DEBUG)>,), {}.Функция вызвана в функции\молуле main.
+2021-11-08 14:20:58,662 DEBUG      utils.py                  Проверка введенного режима клиента
+2021-11-08 14:20:58,662 INFO       utils.py                  Режим клиента listen
+2021-11-08 14:20:58,662 INFO       client.py                 Запущен клиент с парамертами: адрес сервера: 127.0.0.1 , порт: 7777/, режим listen
+2021-11-08 14:20:58,663 DEBUG      decor.py                  Вызвана функция create_client_info с параметрами (), {}.Функция вызвана в функции\молуле main.
+2021-11-08 14:20:58,663 DEBUG      client.py                 Сформировано сообщение presence для пользователя Guest
+2021-11-08 14:20:58,663 DEBUG      decor.py                  Вызвана функция send_data с параметрами (<socket.socket fd=5, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 38176), raddr=('127.0.0.1', 7777)>, {'action': 'presence', 'time': 1636370458.6631477, 'user': {'account_name': 'Guest'}}), {}.Функция вызвана в функции\молуле main.
+2021-11-08 14:20:58,663 DEBUG      decor.py                  Вызвана функция get_data с параметрами (<socket.socket fd=5, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 38176), raddr=('127.0.0.1', 7777)>,), {}.Функция вызвана в функции\молуле main.
+2021-11-08 14:20:58,666 DEBUG      decor.py                  Вызвана функция check_ans с параметрами ({'response': 200},), {}.Функция вызвана в функции\молуле main.
+2021-11-08 14:20:58,666 DEBUG      client.py                 Разбор сообщения от сервера {'response': 200}
+2021-11-08 14:20:58,678 DEBUG      client.py                 Статус сообщения "200 : OK"
+2021-11-08 14:20:58,678 DEBUG      client.py                 Ответ сервера 200 : OK
+2021-11-08 14:20:58,679 DEBUG      decor.py                  Вызвана функция get_data с параметрами (<socket.socket fd=5, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 38174), raddr=('127.0.0.1', 7777)>,), {}.Функция вызвана в функции\молуле main.
+2021-11-08 14:20:59,170 DEBUG      decor.py                  Вызвана функция check_ans с параметрами ({'response': 200},), {}.Функция вызвана в функции\молуле main.
+2021-11-08 14:20:59,170 DEBUG      client.py                 Разбор сообщения от сервера {'response': 200}
+2021-11-08 14:20:59,170 DEBUG      client.py                 Статус сообщения "200 : OK"
+2021-11-08 14:20:59,170 DEBUG      client.py                 Ответ сервера 200 : OK
+2021-11-08 14:20:59,171 DEBUG      decor.py                  Вызвана функция get_data с параметрами (<socket.socket fd=5, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 38176), raddr=('127.0.0.1', 7777)>,), {}.Функция вызвана в функции\молуле main.
+2021-11-08 14:21:05,896 DEBUG      client.py                 Сформирован словарь сообщения: {'action': 'message', 'time': 1636370465.8960319, 'account_name': 'Guest', 'mess_text': 'dsd'}
+2021-11-08 14:21:05,897 DEBUG      decor.py                  Вызвана функция send_data с параметрами (<socket.socket fd=5, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 38172), raddr=('127.0.0.1', 7777)>, {'action': 'message', 'time': 1636370465.8960319, 'account_name': 'Guest', 'mess_text': 'dsd'}), {}.Функция вызвана в функции\молуле main.
+2021-11-08 14:21:05,897 DEBUG      decor.py                  Вызвана функция create_message с параметрами (<socket.socket fd=5, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 38172), raddr=('127.0.0.1', 7777)>,), {}.Функция вызвана в функции\молуле main.
+2021-11-08 14:21:06,183 DEBUG      decor.py                  Вызвана функция message_from_server с параметрами ({'action': 'message', 'sender': 'Guest', 'time': 1636370466.180732, 'mess_text': 'dsd'},), {}.Функция вызвана в функции\молуле main.
+2021-11-08 14:21:06,184 INFO       client.py                 Получено сообщение от пользователя Guest:
+dsd
+2021-11-08 14:21:06,184 DEBUG      decor.py                  Вызвана функция message_from_server с параметрами ({'action': 'message', 'sender': 'Guest', 'time': 1636370466.180732, 'mess_text': 'dsd'},), {}.Функция вызвана в функции\молуле main.
+2021-11-08 14:21:06,184 INFO       client.py                 Получено сообщение от пользователя Guest:
+dsd
+2021-11-08 14:21:06,184 DEBUG      decor.py                  Вызвана функция get_data с параметрами (<socket.socket fd=5, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 38174), raddr=('127.0.0.1', 7777)>,), {}.Функция вызвана в функции\молуле main.
+2021-11-08 14:21:06,185 DEBUG      decor.py                  Вызвана функция get_data с параметрами (<socket.socket fd=5, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 38176), raddr=('127.0.0.1', 7777)>,), {}.Функция вызвана в функции\молуле main.
+2021-11-08 14:21:10,711 INFO       client.py                 Завершение работы по команде пользователя.
+2021-11-08 14:21:15,367 INFO       client.py                 Завершение работы по команде пользователя.

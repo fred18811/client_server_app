@@ -35,7 +35,7 @@ def create_client_info(account_name='Guest'):
 
 
 @Log()
-def check_ans(message):
+def check_answer(message):
     """
     Функция разбирает ответ сервера
     :param message:
@@ -96,7 +96,7 @@ def main():
         transport = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         transport.connect((server_ip_address, server_eth_port))
         send_data(transport, create_client_info())
-        answer_from_server = check_ans(get_data(transport))
+        answer_from_server = check_answer(get_data(transport))
         CLIENT_LOGGER.debug(f'Ответ сервера {answer_from_server}')
         print(f'Установлено соединение с сервером.')
     except json.JSONDecodeError:

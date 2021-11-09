@@ -25,7 +25,6 @@ USER = 'user'
 ACCOUNT_NAME = 'account_name'
 PORT = 'port'
 SENDER = 'sender'
-SENDER = 'sender'
 
 # Прочие ключи, используемые в протоколе
 PRESENCE = 'presence'

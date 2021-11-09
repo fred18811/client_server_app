@@ -17,12 +17,13 @@ def get_subprocess(file_with_args):
 
 process = []
 while True:
-    TEXT_FOR_INPUT = "Выберите действие: q - выход, number(1-10) - запустить 1-сервер и n-клиентов, x - закрыть все окна: "
+    TEXT_FOR_INPUT = "Выберите действие: q - выход, number(1-10) - запустить 1-сервер и n-клиентов," \
+                     "/ x - закрыть все окна: "
     action = input(TEXT_FOR_INPUT)
 
     if action == "q":
         break
-    elif action.isdigit() and int(action) >=1 and int(action) <=10:
+    elif action.isdigit() and 1 <= int(action) <= 10:
         process.append(get_subprocess("server.py"))
 
         for i in range(int(action)):
