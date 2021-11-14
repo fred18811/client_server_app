@@ -10,7 +10,7 @@ import threading
 
 from decor import Log
 from common.variables import ACTION, PRESENCE, TIME, USER, ACCOUNT_NAME, \
-    RESPONSE, ERROR, MESSAGE, MESSAGE_TEXT, SENDER
+    RESPONSE, ERROR, MESSAGE, MESSAGE_TEXT, SENDER, EXIT
 from common.utils import get_data, send_data, get_ip_server, get_port_server, get_client_mode
 from errors import ReqFieldMissingError, ServerError
 
@@ -36,6 +36,16 @@ def create_client_info(account_name='Guest'):
 
 
 @Log()
+def create_exit_message(account_name):
+    """Функция создаёт словарь с сообщением о выходе"""
+    return {
+        ACTION: EXIT,
+        TIME: time.time(),
+        ACCOUNT_NAME: account_name
+    }
+
+
+@Log()
 def check_answer(message):
     """
     Функция разбирает ответ сервера
@@ -57,15 +67,18 @@ def check_answer(message):
 
 
 @Log()
-def message_from_server(message):
-    if ACTION in message and message[ACTION] == MESSAGE and \
-            SENDER in message and MESSAGE_TEXT in message:
-        print(f'Получено сообщение от пользователя '
-              f'{message[SENDER]}:\n{message[MESSAGE_TEXT]}')
-        CLIENT_LOGGER.info(f'Получено сообщение от пользователя '
-                           f'{message[SENDER]}:\n{message[MESSAGE_TEXT]}')
-    else:
-        CLIENT_LOGGER.error(f'Получено некорректное сообщение с сервера: {message}')
+def message_from_server(sock, username):
+    while True:
+        pass
+    # print(sock)
+    # if ACTION in sock and sock[ACTION] == MESSAGE and \
+    #         SENDER in sock and MESSAGE_TEXT in sock:
+    #     print(f'Получено сообщение от пользователя '
+    #           f'{sock[SENDER]}:\n{sock[MESSAGE_TEXT]}')
+    #     CLIENT_LOGGER.info(f'Получено сообщение от пользователя '
+    #                        f'{sock[SENDER]}:\n{sock[MESSAGE_TEXT]}')
+    # else:
+    #     CLIENT_LOGGER.error(f'Получено некорректное сообщение с сервера: {sock}')
 
 
 @Log()
@@ -84,6 +97,27 @@ def create_message(sock, account_name='Guest'):
     }
     CLIENT_LOGGER.debug(f'Сформирован словарь сообщения: {message_dict}')
     return message_dict
+
+
+@Log()
+def initializing_client_interface(sock, username):
+    # print_help()
+    while True:
+        command = input('Введите команду: ')
+        if command == 'send':
+            create_message(sock, username)
+        elif command == 'help':
+            pass
+            # print_help()
+        elif command == 'exit':
+            send_data(sock, create_exit_message(username))
+            print('Завершение соединения.')
+            CLIENT_LOGGER.info('Завершение работы по команде пользователя.')
+            # Задержка неоходима, чтобы успело уйти сообщение о выходе
+            time.sleep(0.5)
+            break
+        else:
+            print('Команда не распознана, попробойте снова. help - вывести поддерживаемые команды.')
 
 
 @Log()
@@ -126,26 +160,21 @@ def main():
         CLIENT_LOGGER.critical(f'Не удалось подключиться к серверу {server_ip_address}:{server_eth_port}, '
                                f'конечный компьютер отверг запрос на подключение.')
         sys.exit(1)
-
-    if client_mode == 'send':
-        print('Отправка сообщений.')
     else:
-        print('Приём сообщений.')
+        receiver = threading.Thread(target=message_from_server, args=(transport, client_name))
+        receiver.daemon = True
+        receiver.start()
 
-    while True:
-        if client_mode == 'send':
-            try:
-                send_data(transport, create_message(transport))
-            except (ConnectionResetError, ConnectionError, ConnectionAbortedError):
-                CLIENT_LOGGER.error(f'Соединение с сервером {server_ip_address} было потеряно.')
-                sys.exit(1)
+        client_interface = threading.Thread(target=initializing_client_interface, args=(transport, client_name))
+        client_interface.daemon = True
+        client_interface.start()
+        CLIENT_LOGGER.debug('Запущены процессы')
 
-        if client_mode == 'listen':
-            try:
-                message_from_server(get_data(transport))
-            except (ConnectionResetError, ConnectionError, ConnectionAbortedError):
-                CLIENT_LOGGER.error(f'Соединение с сервером {server_ip_address} было потеряно.')
-                sys.exit(1)
+        while True:
+            time.sleep(1)
+            if receiver.is_alive() and client_interface.is_alive():
+                continue
+            break
 
 
 if __name__ == '__main__':

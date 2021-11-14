@@ -10,7 +10,7 @@ import logs.server_log_config
 from decor import Log
 from common.variables import ACTION, ACCOUNT_NAME, RESPONSE, MAX_CONNECTIONS, \
     PRESENCE, TIME, USER, ERROR, MESSAGE, \
-    MESSAGE_TEXT, SENDER
+    MESSAGE_TEXT, SENDER, EXIT
 from common.utils import get_data, send_data, get_port_server, get_ip_server
 
 SERVER_LOGGER = logging.getLogger('server')
@@ -46,6 +46,11 @@ def check_client_message(message, messages_lst, client, clients, names):
     elif ACTION in message and message[ACTION] == MESSAGE and TIME in message and MESSAGE_TEXT in message:
         SERVER_LOGGER.debug(f'Сообщение от пользователя {message[ACCOUNT_NAME]} получено')
         messages_lst.append((message[ACCOUNT_NAME], message[MESSAGE_TEXT]))
+        return
+    elif ACTION in message and message[ACTION] == EXIT and ACCOUNT_NAME in message:
+        clients.remove(names[message[ACCOUNT_NAME]])
+        names[message[ACCOUNT_NAME]].close()
+        del names[message[ACCOUNT_NAME]]
         return
     else:
         send_data(client, {
