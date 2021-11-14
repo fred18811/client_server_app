@@ -1,41 +1,50 @@
 """Server programm"""
-
+import select
 import socket
 import sys
-import json
 import logging
+import time
+
 import logs.server_log_config
 
 from decor import Log
 from common.variables import ACTION, ACCOUNT_NAME, RESPONSE, MAX_CONNECTIONS, \
-    PRESENCE, TIME, USER, ERROR, DEFAULT_ETHERNET_PORT, RESPONSE_DEFAULT_IP_ADDRESS, DEFAULT_IP
-from common.utils import get_data, send_data
-from errors import IncorrectDataReceivedError
+    PRESENCE, TIME, USER, ERROR, MESSAGE, \
+    MESSAGE_TEXT, SENDER
+from common.utils import get_data, send_data, get_port_server, get_ip_server
 
 SERVER_LOGGER = logging.getLogger('server')
 
 
 @Log()
-def check_client_message(message):
+def check_client_message(message, messages_lst, client):
     """
     Обработчик сообщений от клиентов, принимает словарь -
     сообщение от клинта, проверяет корректность,
     возвращает словарь-ответ для клиента
 
     :param message:
+    :param messages_lst:
+    :param client:
     :return:
     """
     SERVER_LOGGER.debug(f'Разбор сообщения от клиента : {message}')
     if ACTION in message and message[ACTION] == PRESENCE and TIME in message \
             and USER in message and message[USER][ACCOUNT_NAME] == 'Guest':
-        SERVER_LOGGER.debug(f'Сообщение от пользователя {message[USER][ACCOUNT_NAME]} корретно')
-        return {RESPONSE: 200}
-
-    SERVER_LOGGER.debug(f'Не корректное сообщение от пользователя {message[USER][ACCOUNT_NAME]}')
-    return {
-        RESPONSE_DEFAULT_IP_ADDRESS: 400,
-        ERROR: 'Bad Request'
-    }
+        SERVER_LOGGER.debug(f'Пользователь {message[USER][ACCOUNT_NAME]} распознан')
+        send_data(client, {RESPONSE: 200})
+        return
+    elif ACTION in message and message[ACTION] == MESSAGE and TIME in message and MESSAGE_TEXT in message:
+        SERVER_LOGGER.debug(f'Сообщение от пользователя {message[ACCOUNT_NAME]} получено')
+        messages_lst.append((message[ACCOUNT_NAME], message[MESSAGE_TEXT]))
+        return
+    else:
+        send_data(client, {
+            RESPONSE: 400,
+            ERROR: 'Bad Request'
+        })
+        SERVER_LOGGER.debug(f'Не корректное сообщение от пользователя {message[USER][ACCOUNT_NAME]}')
+        return
 
 
 @Log()
@@ -46,63 +55,58 @@ def main():
     server.py -p 8888 -a 127.0.0.1
     :return:
     """
-
-    try:
-        SERVER_LOGGER.debug('Проверка введенного порта')
-        if '-p' in sys.argv:
-            server_port = int(sys.argv[sys.argv.index('-p') + 1])
-        else:
-            server_port = DEFAULT_ETHERNET_PORT
-        if server_port < 1024 or server_port > 65535:
-            raise ValueError
-        SERVER_LOGGER.info(f'Порт сервера {server_port}')
-
-    except IndexError:
-        SERVER_LOGGER.critical('После параметра -\'p\' необходимо указать номер порта.')
-        sys.exit(1)
-    except ValueError:
-        SERVER_LOGGER.critical('В качастве порта может быть указано только число в диапазоне от 1024 до 65535.')
-        sys.exit(1)
-
-    # Затем загружаем какой адрес слушать
-
-    try:
-        SERVER_LOGGER.debug('Проверка введенного ip адреса')
-        if '-a' in sys.argv:
-            server_ip_address = sys.argv[sys.argv.index('-a') + 1]
-        else:
-            server_ip_address = DEFAULT_IP
-        SERVER_LOGGER.info(f'IP адрес {server_ip_address}')
-
-    except IndexError:
-        SERVER_LOGGER.critical('После параметра \'a\'- необходимо указать адрес, который будет слушать сервер.')
-        sys.exit(1)
-
-    # Готовим сокет
+    server_port = get_port_server(SERVER_LOGGER)
+    server_ip_address = get_ip_server(SERVER_LOGGER)
 
     transport = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     transport.bind((server_ip_address, server_port))
-
-    # Слушаем порт
+    transport.settimeout(0.5)
 
     transport.listen(MAX_CONNECTIONS)
 
+    clients = []
+    messages = []
+
     while True:
-        client, client_address = transport.accept()
-        SERVER_LOGGER.info(f'Установлено соедение с ПК {client_address}')
         try:
-            message_from_client = get_data(client)
-            SERVER_LOGGER.debug(f'Получено сообщение {message_from_client}')
-            response = check_client_message(message_from_client)
-            SERVER_LOGGER.info(f'Сформирован ответ клиенту {response}')
-            send_data(client, response)
-            SERVER_LOGGER.debug(f'Соединение с клиентом {client_address} закрывается.')
-            client.close()
-        except json.JSONDecodeError:
-            SERVER_LOGGER.error(f'Не удалось декодировать Json строку, полученную от {client_address}.')
-        except IncorrectDataReceivedError:
-            SERVER_LOGGER.error(f'Приняты некорретное сообщение от клиента {client_address}.')
-            client.close()
+            client, client_address = transport.accept()
+        except OSError:
+            pass
+        else:
+            SERVER_LOGGER.debug(f'Установлено соедение с ПК {client_address}')
+            clients.append(client)
+
+        read_data_lst = []
+        write_data_lst = []
+
+        try:
+            read_data_lst, write_data_lst, errors_lst = select.select(clients, clients, [], 0)
+        except OSError:
+            pass
+
+        if read_data_lst:
+            for client_msg in read_data_lst:
+                try:
+                    check_client_message(get_data(client_msg), messages, client_msg)
+                except:
+                    SERVER_LOGGER.info(f'Клиент {client_msg.getpeername()} отключился.')
+                    clients.remove(client_msg)
+
+        if messages and write_data_lst:
+            message = {
+                ACTION: MESSAGE,
+                SENDER: messages[0][0],
+                TIME: time.time(),
+                MESSAGE_TEXT: messages[0][1]
+            }
+            del messages[0]
+            for waiting_client in write_data_lst:
+                try:
+                    send_data(waiting_client, message)
+                except:
+                    SERVER_LOGGER.info(f'Клиент {waiting_client.getpeername()} отключился.')
+                    waiting_client.close()
+                    clients.remove(waiting_client)
 
 
 if __name__ == '__main__':

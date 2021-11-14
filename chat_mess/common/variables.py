@@ -24,9 +24,13 @@ TIME = 'time'
 USER = 'user'
 ACCOUNT_NAME = 'account_name'
 PORT = 'port'
+SENDER = 'sender'
 
 # Прочие ключи, используемые в протоколе
 PRESENCE = 'presence'
 RESPONSE = 'response'
 ERROR = 'error'
 RESPONSE_DEFAULT_IP_ADDRESS = 'response_default_ip_address'
+MESSAGE = 'message'
+MESSAGE_TEXT = 'mess_text'
+DEFAULT_MODE_CLIENT = 'listen'
