@@ -6,6 +6,7 @@ import socket
 import time
 import logging
 import logs.client_log_config
+import threading
 
 from decor import Log
 from common.variables import ACTION, PRESENCE, TIME, USER, ACCOUNT_NAME, \
@@ -46,6 +47,9 @@ def check_answer(message):
         if message[RESPONSE] == 200:
             CLIENT_LOGGER.debug(f'Статус сообщения "200 : OK"')
             return '200 : OK'
+        elif message[RESPONSE] == 409:
+            CLIENT_LOGGER.debug(f'Статус сообщения "409 : Bad name client"')
+            return '409 : Bad name client'
         elif message[RESPONSE] == 400:
             CLIENT_LOGGER.debug(f'Статус сообщения 400 : {message[ERROR]}')
             raise ServerError(f'400: {message[ERROR]}')
@@ -95,19 +99,28 @@ def main():
     try:
         transport = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         transport.connect((server_ip_address, server_eth_port))
-        send_data(transport, create_client_info())
-        answer_from_server = check_answer(get_data(transport))
-        CLIENT_LOGGER.debug(f'Ответ сервера {answer_from_server}')
+
+        while True:
+            client_name = input('Введите имя клиента: ')
+            send_data(transport, create_client_info(client_name))
+            answer_from_server = check_answer(get_data(transport))
+            if answer_from_server == '200 : OK':
+                break
+            else:
+                print('Данное имя занято')
+            CLIENT_LOGGER.debug(f'Ответ сервера {answer_from_server}')
+
+        CLIENT_LOGGER.info(f'Имя клиента {client_name}')
         print(f'Установлено соединение с сервером.')
     except json.JSONDecodeError:
         CLIENT_LOGGER.error('Не удалось декодировать полученную Json строку.')
         sys.exit(1)
-    except ServerError:
-        CLIENT_LOGGER.error(f'Сервер вернул ошибку: {ServerError.text}')
+    except ServerError as error:
+        CLIENT_LOGGER.error(f'Сервер вернул ошибку: {error.text}')
         sys.exit(1)
-    except ReqFieldMissingError:
+    except ReqFieldMissingError as error:
         CLIENT_LOGGER.error(f'В ответе сервера отсутствует необходимое поле '
-                            f'{ReqFieldMissingError.missing_field}')
+                            f'{error.missing_field}')
         sys.exit(1)
     except ConnectionRefusedError:
         CLIENT_LOGGER.critical(f'Не удалось подключиться к серверу {server_ip_address}:{server_eth_port}, '

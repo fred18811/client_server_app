@@ -17,7 +17,7 @@ SERVER_LOGGER = logging.getLogger('server')
 
 
 @Log()
-def check_client_message(message, messages_lst, client):
+def check_client_message(message, messages_lst, client, clients, names):
     """
     Обработчик сообщений от клиентов, принимает словарь -
     сообщение от клинта, проверяет корректность,
@@ -26,13 +26,22 @@ def check_client_message(message, messages_lst, client):
     :param message:
     :param messages_lst:
     :param client:
+    :param clients:
+    :param names:
     :return:
     """
     SERVER_LOGGER.debug(f'Разбор сообщения от клиента : {message}')
     if ACTION in message and message[ACTION] == PRESENCE and TIME in message \
-            and USER in message and message[USER][ACCOUNT_NAME] == 'Guest':
-        SERVER_LOGGER.debug(f'Пользователь {message[USER][ACCOUNT_NAME]} распознан')
-        send_data(client, {RESPONSE: 200})
+            and USER in message:
+        if message[USER][ACCOUNT_NAME] not in names.keys():
+            names[message[USER][ACCOUNT_NAME]] = client
+            SERVER_LOGGER.debug(f'Пользователь {message[USER][ACCOUNT_NAME]} распознан')
+            send_data(client, {RESPONSE: 200})
+        else:
+            send_data(client, {
+                RESPONSE: 409,
+                ERROR: 'Имя пользователя уже занято.'
+            })
         return
     elif ACTION in message and message[ACTION] == MESSAGE and TIME in message and MESSAGE_TEXT in message:
         SERVER_LOGGER.debug(f'Сообщение от пользователя {message[ACCOUNT_NAME]} получено')
@@ -66,6 +75,7 @@ def main():
 
     clients = []
     messages = []
+    names = dict()
 
     while True:
         try:
@@ -87,7 +97,7 @@ def main():
         if read_data_lst:
             for client_msg in read_data_lst:
                 try:
-                    check_client_message(get_data(client_msg), messages, client_msg)
+                    check_client_message(get_data(client_msg), messages, client_msg,  clients, names)
                 except:
                     SERVER_LOGGER.info(f'Клиент {client_msg.getpeername()} отключился.')
                     clients.remove(client_msg)
