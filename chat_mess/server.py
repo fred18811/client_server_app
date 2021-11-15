@@ -31,7 +31,7 @@ def check_client_message(message, messages_lst, client, clients, names):
     SERVER_LOGGER.debug(f'Разбор сообщения от клиента : {message}')
     if ACTION in message and message[ACTION] == PRESENCE and TIME in message \
             and USER in message:
-        if message[USER][ACCOUNT_NAME] not in names.keys():
+        if message[USER][ACCOUNT_NAME] not in names.keys() and message[USER][ACCOUNT_NAME] != ALL:
             names[message[USER][ACCOUNT_NAME]] = client
             SERVER_LOGGER.debug(f'Пользователь {message[USER][ACCOUNT_NAME]} распознан')
             send_data(client, {RESPONSE: 200})
