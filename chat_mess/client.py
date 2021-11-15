@@ -109,15 +109,24 @@ def create_message(sock, account_name='Guest'):
 
 
 @Log()
+def print_help():
+    """Функция выводящяя справку по использованию"""
+    print('Поддерживаемые команды:')
+    print('send - отправить сообщение. Кому или всем коммандой "all" и текст будет запрошен отдельно.')
+    print('help - вывести подсказки по командам')
+    print('exit - выход из программы')
+
+
+@Log()
 def initializing_client_interface(sock, username):
-    # print_help()
+    print_help()
     while True:
         command = input('Введите команду: ')
         if command == 'send':
             create_message(sock, username)
         elif command == 'help':
             pass
-            # print_help()
+            print_help()
         elif command == 'exit':
             send_data(sock, create_exit_message(username))
             print('Завершение соединения.')
