@@ -10,8 +10,8 @@ import threading
 
 from decor import Log
 from common.variables import ACTION, PRESENCE, TIME, USER, ACCOUNT_NAME, \
-    RESPONSE, ERROR, MESSAGE, MESSAGE_TEXT, SENDER, EXIT, DESTINATION
-from common.utils import get_data, send_data, get_ip_server, get_port_server, get_client_mode
+    RESPONSE, ERROR, MESSAGE, MESSAGE_TEXT, SENDER, EXIT, DESTINATION, ALL
+from common.utils import get_data, send_data, get_ip_server, get_port_server, get_client_name
 from errors import ReqFieldMissingError, ServerError, IncorrectDataReceivedError
 
 CLIENT_LOGGER = logging.getLogger('client')
@@ -142,17 +142,20 @@ def main():
     """Загружаем параметы коммандной строки"""
     server_ip_address = get_ip_server(CLIENT_LOGGER)
     server_eth_port = get_port_server(CLIENT_LOGGER)
-    client_mode = get_client_mode(CLIENT_LOGGER)
+    client_name_module = get_client_name(CLIENT_LOGGER)
 
     CLIENT_LOGGER.info(f'Запущен клиент с парамертами: адрес сервера: {server_ip_address} , порт: {server_eth_port}/'
-                       f', режим {client_mode}')
+                       f', режим {client_name_module}')
 
     try:
         transport = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         transport.connect((server_ip_address, server_eth_port))
 
         while True:
-            client_name = input('Введите имя клиента: ')
+            if client_name_module and client_name_module != ALL:
+                client_name = client_name_module
+            else:
+                client_name = input('Введите имя клиента: ')
             send_data(transport, create_client_info(client_name))
             answer_from_server = check_answer(get_data(transport))
             if answer_from_server == '200 : OK':

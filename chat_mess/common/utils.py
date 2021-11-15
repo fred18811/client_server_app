@@ -77,20 +77,13 @@ def get_ip_server(logger):
 
 
 @Log()
-def get_client_mode(logger):
+def get_client_name(logger):
     try:
-        logger.debug('Проверка введенного режима клиента')
-        if '-m' in sys.argv:
-            client_mode = sys.argv[sys.argv.index('-m') + 1]
-        else:
-            client_mode = DEFAULT_MODE_CLIENT
-        logger.info(f'Режим клиента {client_mode}')
-        if client_mode not in ('listen', 'send'):
-            raise IncorrectClientMode
-        return client_mode
+        logger.debug('Проверка введенного имени клиента')
+        if '-n' in sys.argv:
+            client_name = sys.argv[sys.argv.index('-n') + 1]
+            logger.info(f'Имя клиента {client_name}')
+            return client_name
     except IndexError:
-        logger.critical('После параметра \'m\'- необходимо указать режим.')
-        sys.exit(1)
-    except IncorrectClientMode:
-        logger.critical(f'Указан недопустимый режим работы {client_mode}, допустимые режимы: listen , send')
+        logger.critical('После параметра \'n\'- необходимо указать имя.')
         sys.exit(1)
