@@ -10,9 +10,9 @@ import threading
 
 from decor import Log
 from common.variables import ACTION, PRESENCE, TIME, USER, ACCOUNT_NAME, \
-    RESPONSE, ERROR, MESSAGE, MESSAGE_TEXT, SENDER, EXIT
+    RESPONSE, ERROR, MESSAGE, MESSAGE_TEXT, SENDER, EXIT, DESTINATION
 from common.utils import get_data, send_data, get_ip_server, get_port_server, get_client_mode
-from errors import ReqFieldMissingError, ServerError
+from errors import ReqFieldMissingError, ServerError, IncorrectDataReceivedError
 
 CLIENT_LOGGER = logging.getLogger('client')
 
@@ -69,34 +69,43 @@ def check_answer(message):
 @Log()
 def message_from_server(sock, username):
     while True:
-        pass
-    # print(sock)
-    # if ACTION in sock and sock[ACTION] == MESSAGE and \
-    #         SENDER in sock and MESSAGE_TEXT in sock:
-    #     print(f'Получено сообщение от пользователя '
-    #           f'{sock[SENDER]}:\n{sock[MESSAGE_TEXT]}')
-    #     CLIENT_LOGGER.info(f'Получено сообщение от пользователя '
-    #                        f'{sock[SENDER]}:\n{sock[MESSAGE_TEXT]}')
-    # else:
-    #     CLIENT_LOGGER.error(f'Получено некорректное сообщение с сервера: {sock}')
+        try:
+            message = get_data(sock)
+            if ACTION in message and message[ACTION] == MESSAGE and \
+                    SENDER in message and DESTINATION in message \
+                    and MESSAGE_TEXT in message and message[DESTINATION] == username:
+                print(f'\nПолучено сообщение от пользователя {message[SENDER]}:'
+                      f'\n{message[MESSAGE_TEXT]}')
+                CLIENT_LOGGER.info(f'Получено сообщение от пользователя {message[SENDER]}:'
+                            f'\n{message[MESSAGE_TEXT]}')
+            else:
+                CLIENT_LOGGER.error(f'Получено некорректное сообщение с сервера: {message}')
+        except IncorrectDataReceivedError:
+            CLIENT_LOGGER.error(f'Не удалось декодировать полученное сообщение.')
+        except (OSError, ConnectionError, ConnectionAbortedError,
+                ConnectionResetError, json.JSONDecodeError):
+            CLIENT_LOGGER.critical(f'Потеряно соединение с сервером.')
+            break
 
 
 @Log()
 def create_message(sock, account_name='Guest'):
-    message = input('Введите сообщение или \'###\' для завершения работы: ')
-    if message == '###':
-        sock.close()
-        CLIENT_LOGGER.info('Завершение работы по команде пользователя.')
-        print('Выход из системы')
-        sys.exit(0)
+    to_user = input('Введите получателя сообщения или введите all(для отправки всем): ')
+    message = input('Введите сообщение: ')
     message_dict = {
         ACTION: MESSAGE,
+        SENDER: account_name,
+        DESTINATION: to_user,
         TIME: time.time(),
-        ACCOUNT_NAME: account_name,
         MESSAGE_TEXT: message
     }
     CLIENT_LOGGER.debug(f'Сформирован словарь сообщения: {message_dict}')
-    return message_dict
+    try:
+        send_data(sock, message_dict)
+        CLIENT_LOGGER.info(f'Отправлено сообщение для пользователя {to_user}')
+    except:
+        CLIENT_LOGGER.critical('Потеряно соединение с сервером.')
+        sys.exit(1)
 
 
 @Log()
@@ -113,7 +122,6 @@ def initializing_client_interface(sock, username):
             send_data(sock, create_exit_message(username))
             print('Завершение соединения.')
             CLIENT_LOGGER.info('Завершение работы по команде пользователя.')
-            # Задержка неоходима, чтобы успело уйти сообщение о выходе
             time.sleep(0.5)
             break
         else:

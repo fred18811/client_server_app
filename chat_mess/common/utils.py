@@ -36,7 +36,6 @@ def send_data(sock, message):
     :param message:
     :return:
     """
-
     js_data = json.dumps(message)
     encoded_data = js_data.encode(ENCODING)
     sock.send(encoded_data)

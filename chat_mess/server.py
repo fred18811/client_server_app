@@ -1,16 +1,14 @@
 """Server programm"""
 import select
 import socket
-import sys
 import logging
-import time
 
 import logs.server_log_config
 
 from decor import Log
 from common.variables import ACTION, ACCOUNT_NAME, RESPONSE, MAX_CONNECTIONS, \
     PRESENCE, TIME, USER, ERROR, MESSAGE, \
-    MESSAGE_TEXT, SENDER, EXIT
+    MESSAGE_TEXT, SENDER, EXIT, DESTINATION, ALL
 from common.utils import get_data, send_data, get_port_server, get_ip_server
 
 SERVER_LOGGER = logging.getLogger('server')
@@ -43,9 +41,10 @@ def check_client_message(message, messages_lst, client, clients, names):
                 ERROR: 'Имя пользователя уже занято.'
             })
         return
-    elif ACTION in message and message[ACTION] == MESSAGE and TIME in message and MESSAGE_TEXT in message:
-        SERVER_LOGGER.debug(f'Сообщение от пользователя {message[ACCOUNT_NAME]} получено')
-        messages_lst.append((message[ACCOUNT_NAME], message[MESSAGE_TEXT]))
+    elif ACTION in message and message[ACTION] == MESSAGE and DESTINATION in message and \
+            TIME in message and SENDER in message and MESSAGE_TEXT in message:
+        SERVER_LOGGER.debug(f'Сообщение от пользователя {message[SENDER]} получено')
+        messages_lst.append(message)
         return
     elif ACTION in message and message[ACTION] == EXIT and ACCOUNT_NAME in message:
         clients.remove(names[message[ACCOUNT_NAME]])
@@ -59,6 +58,34 @@ def check_client_message(message, messages_lst, client, clients, names):
         })
         SERVER_LOGGER.debug(f'Не корректное сообщение от пользователя {message[USER][ACCOUNT_NAME]}')
         return
+
+
+@Log()
+def sending_message(message, names, listen_socks):
+    """
+    Функция адресной отправки сообщения определённому клиенту. Принимает словарь сообщение,
+    список зарегистрированых пользователей и слушающие сокеты. Ничего не возвращает.
+    :param message:
+    :param names:
+    :param listen_socks:
+    :return:
+    """
+    if message[DESTINATION] in names and names[message[DESTINATION]] in listen_socks:
+        send_data(names[message[DESTINATION]], message)
+        SERVER_LOGGER.info(f'Отправлено сообщение пользователю {message[DESTINATION]} '
+                           f'от пользователя {message[SENDER]}.')
+    elif message[DESTINATION] == ALL:
+        for name in names:
+            message[DESTINATION] = name
+            send_data(names[name], message)
+        SERVER_LOGGER.info(f'Отправлено сообщение всем '
+                           f'от пользователя {message[SENDER]}.')
+    elif message[DESTINATION] in names and names[message[DESTINATION]] not in listen_socks:
+        raise ConnectionError
+    else:
+        SERVER_LOGGER.error(
+            f'Пользователь {message[DESTINATION]} не зарегистрирован на сервере, '
+            f'отправка сообщения невозможна.')
 
 
 @Log()
@@ -95,33 +122,29 @@ def main():
         write_data_lst = []
 
         try:
-            read_data_lst, write_data_lst, errors_lst = select.select(clients, clients, [], 0)
+            if clients:
+                read_data_lst, write_data_lst, errors_lst = select.select(clients, clients, [], 0)
         except OSError:
             pass
 
         if read_data_lst:
             for client_msg in read_data_lst:
                 try:
-                    check_client_message(get_data(client_msg), messages, client_msg,  clients, names)
+                    check_client_message(get_data(client_msg), messages, client_msg, clients, names)
                 except:
                     SERVER_LOGGER.info(f'Клиент {client_msg.getpeername()} отключился.')
                     clients.remove(client_msg)
 
-        if messages and write_data_lst:
-            message = {
-                ACTION: MESSAGE,
-                SENDER: messages[0][0],
-                TIME: time.time(),
-                MESSAGE_TEXT: messages[0][1]
-            }
-            del messages[0]
-            for waiting_client in write_data_lst:
-                try:
-                    send_data(waiting_client, message)
-                except:
-                    SERVER_LOGGER.info(f'Клиент {waiting_client.getpeername()} отключился.')
-                    waiting_client.close()
-                    clients.remove(waiting_client)
+        for i in messages:
+            try:
+                SERVER_LOGGER.debug(f'Sending messages')
+                sending_message(i, names, write_data_lst)
+            except:
+                if not i[DESTINATION] == ALL:
+                    SERVER_LOGGER.info(f'Связь с клиентом с именем {i[DESTINATION]} была потеряна')
+                    clients.remove(names[i[DESTINATION]])
+                    del names[i[DESTINATION]]
+        messages.clear()
 
 
 if __name__ == '__main__':
